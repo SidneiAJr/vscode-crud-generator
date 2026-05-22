@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "module": "CommonJS",
+    "target": "ES2022",
+    "outDir": "out",
+    "lib": ["ES2022", "dom"],
+    "sourceMap": true,
+    "rootDir": "src",
+    "strict": false,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "types": ["node"]
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", ".vscode", "out", "**/*.mjs"]
+}

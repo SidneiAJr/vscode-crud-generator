@@ -1,0 +1,46 @@
+{
+  "name": "vscode-crud-generator",
+  "displayName": "CRUD Generator",
+  "description": "Gera CRUD completo (GET, POST, PUT, DELETE) para Express, Spring, Spark, Slim, Laravel e ASP.NET",
+  "version": "0.0.1",
+  "publisher": "AlbertaodasMassa",
+  "icon": "icon.ico",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SidneiAJr/vscode-crud-generator"
+  },
+  "engines": {
+    "vscode": "^1.115.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "crud-generator.gerar",
+        "title": "CRUD Generator: Criar CRUD"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "crud-generator.gerar",
+        "key": "ctrl+shift+c",
+        "mac": "cmd+shift+c"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.19",
+    "@types/vscode": "^1.115.0",
+    "typescript": "^5.9.3",
+    "@vscode/vsce": "^3.7.1"
+  }
+}
