@@ -3,7 +3,7 @@
   "displayName": "CRUD Generator",
   "description": "Gera CRUD completo (GET, POST, PUT, DELETE) para Express, Spring, Spark, Slim, Laravel e ASP.NET",
   "version": "0.0.1",
-  "publisher": "AlbertaodasMassa",
+  "publisher": "SidAlbertaodasmassa",
   "icon": "icon.ico",
   "repository": {
     "type": "git",
