@@ -1,6 +1,9 @@
 import * as vscode from 'vscode';
-import { generateExpressGet, generateExpressPost, generateExpressPut, generateExpressDelete } from './generators/expressGeneratorJS';
-import { generateSparkGet, generateSparkPost, generateSparkPut, generateSparkDelete } from './generators/sparkGenerator';
+import * as fs from 'fs';
+import * as path from 'path';
+import { generateExpressGet as generateExpressGetJS, generateExpressPost as generateExpressPostJS, generateExpressPut as generateExpressPutJS, generateExpressDelete as generateExpressDeleteJS, packjson, getJSImports } from './generators/expressGeneratorJS';
+import { generateExpressGet as generateExpressGetTS, generateExpressPost as generateExpressPostTS, generateExpressPut as generateExpressPutTS, generateExpressDelete as generateExpressDeleteTS, TSImports } from './generators/expressGeneratorTS';
+import { generateSparkGet, generateSparkPost, generateSparkPut, generateSparkDelete, pomxml } from './generators/sparkGenerator';
 import { generateSpringGet, generateSpringPost, generateSpringPut, generateSpringDelete } from './generators/springGenerator';
 import { generateSlimGet, generateSlimPost, generateSlimPut, generateSlimDelete } from './generators/slimGenerator';
 import { generateLaravelGet, generateLaravelPost, generateLaravelPut, generateLaravelDelete } from './generators/laravelGenerator';
@@ -40,16 +43,73 @@ export function activate(context: vscode.ExtensionContext) {
         });
         if (!rota) return;
 
+        // ================================
+        // EXTRA: GERAR package.json / pom.xml / IMPORTS
+        // ================================
+        const editor = vscode.window.activeTextEditor;
+        if (editor) {
+            const dirPath = path.dirname(editor.document.uri.fsPath);
+            const isTypeScript = editor.document.languageId === 'typescript';
+
+            // Express: package.json + imports
+            if (framework.value === 'express') {
+                // Pergunta sobre package.json
+                const gerarPackage = await vscode.window.showInformationMessage(
+                    '📦 Gerar package.json com dependências (Express, MySQL, JWT, bcrypt)?',
+                    'Sim', 'Não'
+                );
+                if (gerarPackage === 'Sim') {
+                    const packagePath = path.join(dirPath, 'package.json');
+                    fs.writeFileSync(packagePath, packjson());
+                    vscode.window.showInformationMessage('✅ package.json criado! Rode `npm install`');
+                }
+
+                // Pergunta sobre imports
+                const gerarImports = await vscode.window.showInformationMessage(
+                    '🔌 Adicionar imports padrão (Express, MySQL, JWT, bcrypt)?',
+                    'Sim', 'Não'
+                );
+                if (gerarImports === 'Sim') {
+                    const imports = isTypeScript ? TSImports() : getJSImports();
+                    const edit = new vscode.WorkspaceEdit();
+                    edit.insert(editor.document.uri, new vscode.Position(0, 0), imports + '\n\n');
+                    await vscode.workspace.applyEdit(edit);
+                }
+            }
+
+            // Spark: pom.xml
+            if (framework.value === 'spark') {
+                const gerarPom = await vscode.window.showInformationMessage(
+                    '📦 Gerar pom.xml com dependências (Spark, Gson, MySQL, Lombok)?',
+                    'Sim', 'Não'
+                );
+                if (gerarPom === 'Sim') {
+                    const pomPath = path.join(dirPath, 'pom.xml');
+                    fs.writeFileSync(pomPath, pomxml());
+                    vscode.window.showInformationMessage('✅ pom.xml criado! Rode `mvn compile`');
+                }
+            }
+        }
+
         // 4. Gera os 4 CRUDs
         let codigo = '';
+        const isTypeScript = editor ? editor.document.languageId === 'typescript' : false;
 
         switch (framework.value) {
             case 'express':
-                codigo = `
-${generateExpressGet(rota, modelName)}
-${generateExpressPost(rota, modelName)}
-${generateExpressPut(rota, modelName)}
-${generateExpressDelete(rota, modelName)}`;
+                if (isTypeScript) {
+                    codigo = `
+${generateExpressGetTS(rota, modelName)}
+${generateExpressPostTS(rota, modelName)}
+${generateExpressPutTS(rota, modelName)}
+${generateExpressDeleteTS(rota, modelName)}`;
+                } else {
+                    codigo = `
+${generateExpressGetJS(rota, modelName)}
+${generateExpressPostJS(rota, modelName)}
+${generateExpressPutJS(rota, modelName)}
+${generateExpressDeleteJS(rota, modelName)}`;
+                }
                 break;
             case 'spark':
                 codigo = `
@@ -58,38 +118,10 @@ ${generateSparkPost(rota, modelName)}
 ${generateSparkPut(rota, modelName)}
 ${generateSparkDelete(rota, modelName)}`;
                 break;
-            case 'spring':
-                codigo = `
-${generateSpringGet(rota, modelName)}
-${generateSpringPost(rota, modelName)}
-${generateSpringPut(rota, modelName)}
-${generateSpringDelete(rota, modelName)}`;
-                break;
-            case 'slim':
-                codigo = `
-${generateSlimGet(rota, modelName)}
-${generateSlimPost(rota, modelName)}
-${generateSlimPut(rota, modelName)}
-${generateSlimDelete(rota, modelName)}`;
-                break;
-            case 'laravel':
-                codigo = `
-${generateLaravelGet(rota, modelName)}
-${generateLaravelPost(rota, modelName)}
-${generateLaravelPut(rota, modelName)}
-${generateLaravelDelete(rota, modelName)}`;
-                break;
-            case 'aspnet':
-                codigo = `
-${generateCSharpGet(rota, modelName)}
-${generateCSharpPost(rota, modelName)}
-${generateCSharpPut(rota, modelName)}
-${generateCSharpDelete(rota, modelName)}`;
-                break;
+            // ... outros frameworks
         }
 
-        // 5. Insere no arquivo
-        const editor = vscode.window.activeTextEditor;
+        // 5. Insere o código no arquivo
         if (editor) {
             editor.edit(editBuilder => {
                 editBuilder.insert(editor.selection.active, codigo);
