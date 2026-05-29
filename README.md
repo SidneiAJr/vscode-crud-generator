@@ -1,4 +1,4 @@
-# CRUD Generator - VS Code Extension
+# Basic Crud Generator | Crud Basico de Rotas
 
 ---
 ## ⚠️ AVISO IMPORTANTE
