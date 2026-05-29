@@ -1,13 +1,18 @@
 # CRUD Generator - VS Code Extension
 
-## ⚠️ Aviso
-Este gerador cria um **esqueleto básico** para agilizar o desenvolvimento.
+## ⚠️ AVISO IMPORTANTE
 
-**Antes de usar em produção, você deve:**
-- Substituir concatenação de strings por **prepared statements** (segurança)
-- Adicionar **validação de dados**
+Este gerador cria um **ESQUELETO** de código para agilizar o desenvolvimento.
+
+**Antes de usar em produção, você DEVE:**
+- Substituir concatenação de strings por **prepared statements** (`?` + array de valores)
+- Adicionar **validação de dados** (nunca confie no usuário)
 - Implementar **autenticação e autorização**
 - Configurar **tratamento de erros adequado**
+
+O código gerado é um **ponto de partida**, não um produto final.
+
+🔒 **Segurança é sua responsabilidade.**
 
 ---
 
