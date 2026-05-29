@@ -103,6 +103,7 @@ export function generateSparkGet(rota: string, modelName: string): string {
     const tableName = modelName.toLowerCase();
     
     return `get("${rota}", (req, res) -> {
+    // ⚠️ ATENÇÃO: Substitua [sua tabela aqui] pelo nome real da tabela
     String sql = "SELECT * FROM [sua tabela aqui]";
     try (Statement stmt = conn.createStatement();
          ResultSet rs = stmt.executeQuery(sql)) {
@@ -126,9 +127,13 @@ export function generateSparkGetById(rota: string, modelName: string): string {
     
     return `get("${rota}/:id", (req, res) -> {
     int id = Integer.parseInt(req.params(":id"));
-    String sql = "SELECT * FROM [sua tabela aqui] WHERE id = " + id;
-    try (Statement stmt = conn.createStatement();
-         ResultSet rs = stmt.executeQuery(sql)) {
+    // ⚠️ ATENÇÃO: Use prepared statements em produção!
+    // Exemplo correto: PreparedStatement stmt = conn.prepareStatement("SELECT * FROM tabela WHERE id = ?");
+    // stmt.setInt(1, id);
+    String sql = "SELECT * FROM [sua tabela aqui] WHERE id = ?";
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setInt(1, id);
+        ResultSet rs = stmt.executeQuery();
         if (rs.next()) {
             Map<String, Object> item = new HashMap<>();
             item.put("id", rs.getInt("id"));
@@ -152,9 +157,15 @@ export function generateSparkPost(rota: string, modelName: string): string {
     Map<String, String> dados = gson.fromJson(req.body(), Map.class);
     String nome = dados.get("nome");
     String email = dados.get("email");
-    String sql = "INSERT INTO [sua tabela aqui] (nome, email) VALUES ('" + nome + "', '" + email + "')";
-    try (Statement stmt = conn.createStatement()) {
-        int rows = stmt.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+    // ⚠️ ATENÇÃO: Use prepared statements em produção!
+    // Exemplo correto: PreparedStatement stmt = conn.prepareStatement("INSERT INTO tabela (nome, email) VALUES (?, ?)");
+    // stmt.setString(1, nome);
+    // stmt.setString(2, email);
+    String sql = "INSERT INTO [sua tabela aqui] (nome, email) VALUES (?, ?)";
+    try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        stmt.setString(1, nome);
+        stmt.setString(2, email);
+        stmt.executeUpdate();
         ResultSet rs = stmt.getGeneratedKeys();
         int id = 0;
         if (rs.next()) id = rs.getInt(1);
@@ -174,9 +185,17 @@ export function generateSparkPut(rota: string, modelName: string): string {
     Map<String, String> dados = gson.fromJson(req.body(), Map.class);
     String nome = dados.get("nome");
     String email = dados.get("email");
-    String sql = "UPDATE [sua tabela aqui] SET nome = '" + nome + "', email = '" + email + "' WHERE id = " + id;
-    try (Statement stmt = conn.createStatement()) {
-        int rows = stmt.executeUpdate(sql);
+    // ⚠️ ATENÇÃO: Use prepared statements em produção!
+    // Exemplo correto: PreparedStatement stmt = conn.prepareStatement("UPDATE tabela SET nome = ?, email = ? WHERE id = ?");
+    // stmt.setString(1, nome);
+    // stmt.setString(2, email);
+    // stmt.setInt(3, id);
+    String sql = "UPDATE [sua tabela aqui] SET nome = ?, email = ? WHERE id = ?";
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setString(1, nome);
+        stmt.setString(2, email);
+        stmt.setInt(3, id);
+        int rows = stmt.executeUpdate();
         if (rows == 0) {
             return new Gson().toJson(Map.of("erro", "Registro não encontrado"));
         }
@@ -192,9 +211,13 @@ export function generateSparkDelete(rota: string, modelName: string): string {
     
     return `delete("${rota}/:id", (req, res) -> {
     int id = Integer.parseInt(req.params(":id"));
-    String sql = "DELETE FROM [sua tabela aqui] WHERE id = " + id;
-    try (Statement stmt = conn.createStatement()) {
-        int rows = stmt.executeUpdate(sql);
+    // ⚠️ ATENÇÃO: Use prepared statements em produção!
+    // Exemplo correto: PreparedStatement stmt = conn.prepareStatement("DELETE FROM tabela WHERE id = ?");
+    // stmt.setInt(1, id);
+    String sql = "DELETE FROM [sua tabela aqui] WHERE id = ?";
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setInt(1, id);
+        int rows = stmt.executeUpdate();
         if (rows == 0) {
             return new Gson().toJson(Map.of("erro", "Registro não encontrado"));
         }

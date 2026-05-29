@@ -1,5 +1,6 @@
 # CRUD Generator - VS Code Extension
 
+---
 ## ⚠️ AVISO IMPORTANTE
 
 Este gerador cria um **ESQUELETO** de código para agilizar o desenvolvimento.
@@ -16,9 +17,27 @@ O código gerado é um **ponto de partida**, não um produto final.
 
 ---
 
+## 🎯 Para quem é essa extensão?
+
+Esta extensão foi criada para **acelerar o aprendizado e a prototipagem**.
+
+Ela é ideal para:
+- 🧑‍🎓 **Estudantes** que querem ver a estrutura de um CRUD funcionando
+- ⚡ **Desenvolvedores** que precisam de um ponto de partida rápido para uma POC (prova de conceito)
+- 🧪 **Testes** de integração ou validação de modelos
+
+**Ela NÃO foi feita para:**
+- ❌ Gerar código pronto para produção sem revisão
+- ❌ Ignorar boas práticas de segurança
+- ❌ Substituir a necessidade de entender o que o código faz
+
+👉 **Use como base, estude o código gerado, adapte para seu contexto e só então coloque em produção.**
+
 O código gerado é um ponto de partida, não um produto final.
 
 Gera CRUD completo (GET, POST, PUT, DELETE) para múltiplos frameworks.
+
+---
 
 ## 🚀 Frameworks suportados
 
@@ -28,6 +47,8 @@ Gera CRUD completo (GET, POST, PUT, DELETE) para múltiplos frameworks.
 - **Slim** (PHP)
 - **Laravel** (PHP)
 - **ASP.NET Core** (C#)
+
+---
 
 ## 📦 Como usar
 

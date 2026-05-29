@@ -118,7 +118,37 @@ ${generateSparkPost(rota, modelName)}
 ${generateSparkPut(rota, modelName)}
 ${generateSparkDelete(rota, modelName)}`;
                 break;
-            // ... outros frameworks
+            case 'spring':
+                codigo = `
+${generateSpringGet(rota, modelName)}
+${generateSpringPost(rota, modelName)}
+${generateSpringPut(rota, modelName)}
+${generateSpringDelete(rota, modelName)}`;
+                break;
+
+            case 'slim':
+                codigo = `
+${generateSlimGet(rota, modelName)}
+${generateSlimPost(rota, modelName)}
+${generateSlimPut(rota, modelName)}
+${generateSlimDelete(rota, modelName)}`;
+                break;
+
+            case 'laravel':
+                codigo = `
+${generateLaravelGet(rota, modelName)}
+${generateLaravelPost(rota, modelName)}
+${generateLaravelPut(rota, modelName)}
+${generateLaravelDelete(rota, modelName)}`;
+                break;
+
+            case 'aspnet':
+                codigo = `
+${generateCSharpGet(rota, modelName)}
+${generateCSharpPost(rota, modelName)}
+${generateCSharpPut(rota, modelName)}
+${generateCSharpDelete(rota, modelName)}`;
+                break;
         }
 
         // 5. Insere o código no arquivo
@@ -135,4 +165,4 @@ ${generateSparkDelete(rota, modelName)}`;
     context.subscriptions.push(disposable);
 }
 
-export function deactivate() {}
+export function deactivate() { }

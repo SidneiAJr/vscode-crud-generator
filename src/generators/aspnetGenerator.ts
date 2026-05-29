@@ -1,7 +1,3 @@
-// ================================
-// ASP.NET CORE (C#) GENERATORS - VERSÃO SIMPLES
-// ================================
-
 export function generateCSharpGet(rota: string, modelName: string): string {
     const modelUpper = modelName.charAt(0).toUpperCase() + modelName.slice(1);
     const tableName = modelName.toLowerCase();

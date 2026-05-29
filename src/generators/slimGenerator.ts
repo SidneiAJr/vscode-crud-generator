@@ -6,6 +6,7 @@ export function generateSlimGet(rota: string, modelName: string): string {
     const tableName = modelName.toLowerCase();
     
     return `$app->get('${rota}', function ($request, $response, $args) {
+    // ⚠️ ATENÇÃO: Substitua [sua tabela aqui] pelo nome real da tabela
     $sql = "SELECT * FROM [sua tabela aqui]";
     try {
         $conn = new PDO("mysql:host=localhost;dbname=meubanco", "root", "");
@@ -24,11 +25,16 @@ export function generateSlimGetById(rota: string, modelName: string): string {
     
     return `$app->get('${rota}/{id}', function ($request, $response, $args) {
     $id = $args['id'];
-    $sql = "SELECT * FROM [sua tabela aqui] WHERE id = " . $id;
+    // ⚠️ ATENÇÃO: Use prepared statements em produção!
+    // Exemplo correto: $sql = "SELECT * FROM tabela WHERE id = ?";
+    // $stmt = $conn->prepare($sql);
+    // $stmt->execute([$id]);
+    $sql = "SELECT * FROM [sua tabela aqui] WHERE id = ?";
     try {
         $conn = new PDO("mysql:host=localhost;dbname=meubanco", "root", "");
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $stmt = $conn->query($sql);
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([$id]);
         $dado = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$dado) {
             return $response->withJson(['erro' => 'Registro não encontrado'], 404);
@@ -47,11 +53,16 @@ export function generateSlimPost(rota: string, modelName: string): string {
     $dados = $request->getParsedBody();
     $nome = $dados['nome'];
     $email = $dados['email'];
-    $sql = "INSERT INTO [sua tabela aqui] (nome, email) VALUES ('" . $nome . "', '" . $email . "')";
+    // ⚠️ ATENÇÃO: Use prepared statements em produção!
+    // Exemplo correto: $sql = "INSERT INTO tabela (nome, email) VALUES (?, ?)";
+    // $stmt = $conn->prepare($sql);
+    // $stmt->execute([$nome, $email]);
+    $sql = "INSERT INTO [sua tabela aqui] (nome, email) VALUES (?, ?)";
     try {
         $conn = new PDO("mysql:host=localhost;dbname=meubanco", "root", "");
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $conn->exec($sql);
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([$nome, $email]);
         $id = $conn->lastInsertId();
         return $response->withJson(['id' => $id, 'nome' => $nome, 'email' => $email], 201);
     } catch (PDOException $e) {
@@ -68,11 +79,17 @@ export function generateSlimPut(rota: string, modelName: string): string {
     $dados = $request->getParsedBody();
     $nome = $dados['nome'];
     $email = $dados['email'];
-    $sql = "UPDATE [sua tabela aqui] SET nome = '" . $nome . "', email = '" . $email . "' WHERE id = " . $id;
+    // ⚠️ ATENÇÃO: Use prepared statements em produção!
+    // Exemplo correto: $sql = "UPDATE tabela SET nome = ?, email = ? WHERE id = ?";
+    // $stmt = $conn->prepare($sql);
+    // $stmt->execute([$nome, $email, $id]);
+    $sql = "UPDATE [sua tabela aqui] SET nome = ?, email = ? WHERE id = ?";
     try {
         $conn = new PDO("mysql:host=localhost;dbname=meubanco", "root", "");
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $rows = $conn->exec($sql);
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([$nome, $email, $id]);
+        $rows = $stmt->rowCount();
         if ($rows == 0) {
             return $response->withJson(['erro' => 'Registro não encontrado'], 404);
         }
@@ -88,11 +105,17 @@ export function generateSlimDelete(rota: string, modelName: string): string {
     
     return `$app->delete('${rota}/{id}', function ($request, $response, $args) {
     $id = $args['id'];
-    $sql = "DELETE FROM [sua tabela aqui] WHERE id = " . $id;
+    // ⚠️ ATENÇÃO: Use prepared statements em produção!
+    // Exemplo correto: $sql = "DELETE FROM tabela WHERE id = ?";
+    // $stmt = $conn->prepare($sql);
+    // $stmt->execute([$id]);
+    $sql = "DELETE FROM [sua tabela aqui] WHERE id = ?";
     try {
         $conn = new PDO("mysql:host=localhost;dbname=meubanco", "root", "");
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $rows = $conn->exec($sql);
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([$id]);
+        $rows = $stmt->rowCount();
         if ($rows == 0) {
             return $response->withJson(['erro' => 'Registro não encontrado'], 404);
         }

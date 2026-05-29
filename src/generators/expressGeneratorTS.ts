@@ -55,6 +55,7 @@ export function generateExpressGet(rota: string, modelName: string): string {
     const tableName = modelName.toLowerCase();
     
     return `app.get('${rota}', (req: Request, res: Response) => {
+    // ⚠️ ATENÇÃO: Substitua [sua tabela aqui] pelo nome real da tabela
     const sql = \`SELECT * FROM [sua tabela aqui]\`;
     connection.query(sql, (err, results) => {
         if (err) {
@@ -70,8 +71,10 @@ export function generateExpressGetById(rota: string, modelName: string): string 
     
     return `app.get('${rota}/:id', (req: Request, res: Response) => {
     const { id } = req.params;
-    const sql = \`SELECT * FROM [sua tabela aqui] WHERE id = \${id}\`;
-    connection.query(sql, (err, result) => {
+    // ⚠️ ATENÇÃO: Use prepared statements em produção!
+    // Exemplo correto: const sql = "SELECT * FROM tabela WHERE id = ?";
+    const sql = \`SELECT * FROM [sua tabela aqui] WHERE id = ?\`;
+    connection.query(sql, [id], (err, result) => {
         if (err) {
             return res.status(500).json({ erro: err.message });
         }
@@ -88,8 +91,10 @@ export function generateExpressPost(rota: string, modelName: string): string {
     
     return `app.post('${rota}', (req: Request, res: Response) => {
     const { nome, email } = req.body;
-    const sql = \`INSERT INTO [sua tabela aqui] (nome, email) VALUES ('\${nome}', '\${email}')\`;
-    connection.query(sql, (err, result) => {
+    // ⚠️ ATENÇÃO: Use prepared statements em produção!
+    // Exemplo correto: const sql = "INSERT INTO tabela (nome, email) VALUES (?, ?)";
+    const sql = \`INSERT INTO [sua tabela aqui] (nome, email) VALUES (?, ?)\`;
+    connection.query(sql, [nome, email], (err, result) => {
         if (err) {
             return res.status(500).json({ erro: err.message });
         }
@@ -104,8 +109,10 @@ export function generateExpressPut(rota: string, modelName: string): string {
     return `app.put('${rota}/:id', (req: Request, res: Response) => {
     const { id } = req.params;
     const { nome, email } = req.body;
-    const sql = \`UPDATE [sua tabela aqui] SET nome = '\${nome}', email = '\${email}' WHERE id = \${id}\`;
-    connection.query(sql, (err, result) => {
+    // ⚠️ ATENÇÃO: Use prepared statements em produção!
+    // Exemplo correto: const sql = "UPDATE tabela SET nome = ?, email = ? WHERE id = ?";
+    const sql = \`UPDATE [sua tabela aqui] SET nome = ?, email = ? WHERE id = ?\`;
+    connection.query(sql, [nome, email, id], (err, result) => {
         if (err) {
             return res.status(500).json({ erro: err.message });
         }
@@ -122,8 +129,10 @@ export function generateExpressDelete(rota: string, modelName: string): string {
     
     return `app.delete('${rota}/:id', (req: Request, res: Response) => {
     const { id } = req.params;
-    const sql = \`DELETE FROM [sua tabela aqui] WHERE id = \${id}\`;
-    connection.query(sql, (err, result) => {
+    // ⚠️ ATENÇÃO: Use prepared statements em produção!
+    // Exemplo correto: const sql = "DELETE FROM tabela WHERE id = ?";
+    const sql = \`DELETE FROM [sua tabela aqui] WHERE id = ?\`;
+    connection.query(sql, [id], (err, result) => {
         if (err) {
             return res.status(500).json({ erro: err.message });
         }

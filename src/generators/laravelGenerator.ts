@@ -1,12 +1,9 @@
-// ================================
-// LARAVEL (PHP) GENERATORS - VERSÃO SIMPLES
-// ================================
-
 export function generateLaravelGet(rota: string, modelName: string): string {
     const modelUpper = modelName.charAt(0).toUpperCase() + modelName.slice(1);
     const tableName = modelName.toLowerCase();
     
     return `Route::get('${rota}', function () {
+    // ⚠️ ATENÇÃO: Substitua [sua tabela aqui] pelo nome real da tabela
     $sql = "SELECT * FROM [sua tabela aqui]";
     $dados = DB::select($sql);
     return response()->json($dados);
@@ -18,8 +15,11 @@ export function generateLaravelGetById(rota: string, modelName: string): string 
     const tableName = modelName.toLowerCase();
     
     return `Route::get('${rota}/{id}', function ($id) {
-    $sql = "SELECT * FROM [sua tabela aqui] WHERE id = {$id}";
-    $dado = DB::select($sql);
+    // ⚠️ ATENÇÃO: Use prepared statements em produção!
+    // Exemplo correto: $sql = "SELECT * FROM tabela WHERE id = ?";
+    // $dado = DB::select($sql, [$id]);
+    $sql = "SELECT * FROM [sua tabela aqui] WHERE id = ?";
+    $dado = DB::select($sql, [$id]);
     if (empty($dado)) {
         return response()->json(['erro' => 'Registro não encontrado'], 404);
     }
@@ -32,8 +32,11 @@ export function generateLaravelPost(rota: string, modelName: string): string {
     const tableName = modelName.toLowerCase();
     
     return `Route::post('${rota}', function (Request $request) {
-    $sql = "INSERT INTO [sua tabela aqui] (nome, email) VALUES ('{$request->nome}', '{$request->email}')";
-    DB::insert($sql);
+    // ⚠️ ATENÇÃO: Use prepared statements em produção!
+    // Exemplo correto: $sql = "INSERT INTO tabela (nome, email) VALUES (?, ?)";
+    // DB::insert($sql, [$request->nome, $request->email]);
+    $sql = "INSERT INTO [sua tabela aqui] (nome, email) VALUES (?, ?)";
+    DB::insert($sql, [$request->nome, $request->email]);
     return response()->json(['mensagem' => 'Registro criado com sucesso'], 201);
 });`;
 }
@@ -43,8 +46,11 @@ export function generateLaravelPut(rota: string, modelName: string): string {
     const tableName = modelName.toLowerCase();
     
     return `Route::put('${rota}/{id}', function (Request $request, $id) {
-    $sql = "UPDATE [sua tabela aqui] SET nome = '{$request->nome}', email = '{$request->email}' WHERE id = {$id}";
-    $linhas = DB::update($sql);
+    // ⚠️ ATENÇÃO: Use prepared statements em produção!
+    // Exemplo correto: $sql = "UPDATE tabela SET nome = ?, email = ? WHERE id = ?";
+    // DB::update($sql, [$request->nome, $request->email, $id]);
+    $sql = "UPDATE [sua tabela aqui] SET nome = ?, email = ? WHERE id = ?";
+    $linhas = DB::update($sql, [$request->nome, $request->email, $id]);
     if ($linhas == 0) {
         return response()->json(['erro' => 'Registro não encontrado'], 404);
     }
@@ -57,8 +63,11 @@ export function generateLaravelDelete(rota: string, modelName: string): string {
     const tableName = modelName.toLowerCase();
     
     return `Route::delete('${rota}/{id}', function ($id) {
-    $sql = "DELETE FROM [sua tabela aqui] WHERE id = {$id}";
-    $linhas = DB::delete($sql);
+    // ⚠️ ATENÇÃO: Use prepared statements em produção!
+    // Exemplo correto: $sql = "DELETE FROM tabela WHERE id = ?";
+    // DB::delete($sql, [$id]);
+    $sql = "DELETE FROM [sua tabela aqui] WHERE id = ?";
+    $linhas = DB::delete($sql, [$id]);
     if ($linhas == 0) {
         return response()->json(['erro' => 'Registro não encontrado'], 404);
     }
@@ -66,66 +75,3 @@ export function generateLaravelDelete(rota: string, modelName: string): string {
 });`;
 }
 
-// ================================
-// LARAVEL VERSÃO COM MODEL (se quiser algo mais perto do real)
-// ================================
-
-export function generateLaravelModelGet(rota: string, modelName: string): string {
-    const modelUpper = modelName.charAt(0).toUpperCase() + modelName.slice(1);
-    const tableName = modelName.toLowerCase();
-    
-    return `Route::get('${rota}', function () {
-    $dados = ${modelUpper}::all();
-    return response()->json($dados);
-});`;
-}
-
-export function generateLaravelModelGetById(rota: string, modelName: string): string {
-    const modelUpper = modelName.charAt(0).toUpperCase() + modelName.slice(1);
-    const tableName = modelName.toLowerCase();
-    
-    return `Route::get('${rota}/{id}', function ($id) {
-    $dado = ${modelUpper}::find($id);
-    if (!$dado) {
-        return response()->json(['erro' => 'Registro não encontrado'], 404);
-    }
-    return response()->json($dado);
-});`;
-}
-
-export function generateLaravelModelPost(rota: string, modelName: string): string {
-    const modelUpper = modelName.charAt(0).toUpperCase() + modelName.slice(1);
-    const tableName = modelName.toLowerCase();
-    
-    return `Route::post('${rota}', function (Request $request) {
-    $dados = ${modelUpper}::create($request->all());
-    return response()->json($dados, 201);
-});`;
-}
-
-export function generateLaravelModelPut(rota: string, modelName: string): string {
-    const modelUpper = modelName.charAt(0).toUpperCase() + modelName.slice(1);
-    const tableName = modelName.toLowerCase();
-    
-    return `Route::put('${rota}/{id}', function (Request $request, $id) {
-    $dado = ${modelUpper}::find($id);
-    if (!$dado) {
-        return response()->json(['erro' => 'Registro não encontrado'], 404);
-    }
-    $dado->update($request->all());
-    return response()->json($dado);
-});`;
-}
-
-export function generateLaravelModelDelete(rota: string, modelName: string): string {
-    const modelUpper = modelName.charAt(0).toUpperCase() + modelName.slice(1);
-    const tableName = modelName.toLowerCase();
-    
-    return `Route::delete('${rota}/{id}', function ($id) {
-    $linhas = ${modelUpper}::destroy($id);
-    if ($linhas == 0) {
-        return response()->json(['erro' => 'Registro não encontrado'], 404);
-    }
-    return response()->json(['mensagem' => 'Registro deletado com sucesso']);
-});`;
-}
